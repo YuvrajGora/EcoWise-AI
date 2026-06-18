@@ -13,6 +13,14 @@ import {
 } from '../utils/sustainabilityIntelligence';
 import { getPriorityRankings } from '../utils/aiPriorityEngine';
 import { getEcoTwinProjections } from '../utils/ecoTwinEngine';
+import {
+  validateUserProfile,
+  validateHabitLogs,
+  validateChallenges,
+  validateNumber,
+  validateBoolean
+} from '../utils/security';
+
 
 const AppContext = createContext<AppState | undefined>(undefined);
 
@@ -21,8 +29,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [onboarded, setOnboarded] = useState<boolean>(() => {
     const queryParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
     if (queryParams && queryParams.get('mock') === 'true') return true;
-    const saved = localStorage.getItem('ecowise_onboarded');
-    return saved ? JSON.parse(saved) : false;
+    try {
+      const saved = localStorage.getItem('ecowise_onboarded');
+      return saved ? JSON.parse(saved) === true : false;
+    } catch (e) {
+      console.error('Failed to parse ecowise_onboarded', e);
+      return false;
+    }
   });
 
   const [profile, setProfile] = useState<UserProfile>(() => {
@@ -49,8 +62,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         recycling: 'recycle_some'
       };
     }
-    const saved = localStorage.getItem('ecowise_profile');
-    return saved ? JSON.parse(saved) : defaultProfile;
+    try {
+      const saved = localStorage.getItem('ecowise_profile');
+      return saved ? validateUserProfile(JSON.parse(saved)) : defaultProfile;
+    } catch (e) {
+      console.error('Failed to parse ecowise_profile', e);
+      return defaultProfile;
+    }
   });
 
   const [habitLogs, setHabitLogs] = useState<HabitLog[]>(() => {
@@ -66,15 +84,25 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         { id: '4', date: twoDaysAgoStr, category: 'energy', value: 1, co2SavedKg: 0.5, description: 'Did a cold laundry wash' }
       ];
     }
-    const saved = localStorage.getItem('ecowise_habit_logs');
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = localStorage.getItem('ecowise_habit_logs');
+      return saved ? validateHabitLogs(JSON.parse(saved)) : [];
+    } catch (e) {
+      console.error('Failed to parse ecowise_habit_logs', e);
+      return [];
+    }
   });
 
   const [xp, setXp] = useState<number>(() => {
     const queryParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
     if (queryParams && queryParams.get('mock') === 'true') return 450;
-    const saved = localStorage.getItem('ecowise_xp');
-    return saved ? Number(saved) : 0;
+    try {
+      const saved = localStorage.getItem('ecowise_xp');
+      return saved ? validateNumber(Number(saved), 0, 1000000, 0) : 0;
+    } catch (e) {
+      console.error('Failed to parse ecowise_xp', e);
+      return 0;
+    }
   });
 
   const [challenges, setChallenges] = useState<Challenge[]>(() => {
@@ -86,23 +114,43 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         { id: 'c3', title: 'Unplugged Evening', description: 'Reduce home electricity usage by 1 hour daily.', co2SavedKg: 1.5, difficulty: 'Low', timeframe: 'daily', completed: false, category: 'energy', xpReward: 20, progressMax: 1, progressCurrent: 0 }
       ];
     }
-    const saved = localStorage.getItem('ecowise_challenges');
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = localStorage.getItem('ecowise_challenges');
+      return saved ? validateChallenges(JSON.parse(saved)) : [];
+    } catch (e) {
+      console.error('Failed to parse ecowise_challenges', e);
+      return [];
+    }
   });
 
   const [highContrast, setHighContrast] = useState<boolean>(() => {
     const queryParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
     if (queryParams && queryParams.get('mock_high_contrast') === 'true') return true;
-    const saved = localStorage.getItem('ecowise_high_contrast');
-    return saved ? JSON.parse(saved) : false;
+    try {
+      const saved = localStorage.getItem('ecowise_high_contrast');
+      return saved ? validateBoolean(JSON.parse(saved), false) : false;
+    } catch (e) {
+      console.error('Failed to parse ecowise_high_contrast', e);
+      return false;
+    }
   });
 
   const [units, setUnitsState] = useState<'metric' | 'imperial'>(() => {
     const queryParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
     if (queryParams && queryParams.get('mock_imperial') === 'true') return 'imperial';
-    const saved = localStorage.getItem('ecowise_units');
-    return saved ? (JSON.parse(saved) as 'metric' | 'imperial') : 'metric';
+    try {
+      const saved = localStorage.getItem('ecowise_units');
+      if (saved) {
+        const val = JSON.parse(saved);
+        return val === 'imperial' ? 'imperial' : 'metric';
+      }
+      return 'metric';
+    } catch (e) {
+      console.error('Failed to parse ecowise_units', e);
+      return 'metric';
+    }
   });
+
 
   // Calculated properties
   const breakdown = calculateFootprint(profile);
@@ -208,14 +256,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   // Sync to LocalStorage
   useEffect(() => {
-    localStorage.setItem('ecowise_onboarded', JSON.stringify(onboarded));
-    localStorage.setItem('ecowise_profile', JSON.stringify(profile));
-    localStorage.setItem('ecowise_habit_logs', JSON.stringify(habitLogs));
-    localStorage.setItem('ecowise_xp', xp.toString());
-    localStorage.setItem('ecowise_challenges', JSON.stringify(challenges));
-    localStorage.setItem('ecowise_high_contrast', JSON.stringify(highContrast));
-    localStorage.setItem('ecowise_units', JSON.stringify(units));
+    try {
+      localStorage.setItem('ecowise_onboarded', JSON.stringify(onboarded));
+      localStorage.setItem('ecowise_profile', JSON.stringify(profile));
+      localStorage.setItem('ecowise_habit_logs', JSON.stringify(habitLogs));
+      localStorage.setItem('ecowise_xp', xp.toString());
+      localStorage.setItem('ecowise_challenges', JSON.stringify(challenges));
+      localStorage.setItem('ecowise_high_contrast', JSON.stringify(highContrast));
+      localStorage.setItem('ecowise_units', JSON.stringify(units));
+    } catch (e) {
+      console.error('Failed to sync state to localStorage', e);
+    }
   }, [onboarded, profile, habitLogs, xp, challenges, highContrast, units]);
+
 
   // Triggered when user finishes Onboarding questionnaire
   const saveProfile = (newProfile: UserProfile) => {

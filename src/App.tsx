@@ -10,6 +10,7 @@ import { CarbonSimulator } from './pages/CarbonSimulator';
 import { Analytics } from './pages/Analytics';
 import { Achievements } from './pages/Achievements';
 import { Settings } from './pages/Settings';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 const AppContent: React.FC = () => {
   const { onboarded, highContrast } = useApp();
@@ -77,7 +78,9 @@ const AppContent: React.FC = () => {
 
       {/* Main screen display */}
       <main className="flex-1 relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {renderPage()}
+        <ErrorBoundary>
+          {renderPage()}
+        </ErrorBoundary>
       </main>
 
       {/* Global footer */}

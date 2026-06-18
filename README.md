@@ -224,9 +224,22 @@ npm run coverage
   * `aiPriorityEngine.ts`: Validates dynamic priority rank ordering based on the savings-to-effort formula.
   * `ecoTwinEngine.ts`: Tests the recommended projection math and sustainability score limits.
   * `impactTranslator.ts`: Validates the accuracy of translating kilograms of CO₂ into trees, driving kilometers, and household electricity equivalents.
-* **UI Components**:
+* **UI Components & Resilience**:
   * `Dashboard.tsx`: Tests rendering of metrics, hotspots, active challenges, and floating quick log interactions.
   * `CarbonSimulator.tsx`: Validates range slider input adjustments, simulation calculations, and resetting to baseline.
+  * `ErrorBoundary.tsx`: Verifies runtime recovery UI rendering, window reload invocation, and local storage reset flows.
+* **Security & Sanitization**:
+  * `security.ts`: Validates text sanitization (HTML escaping for XSS prevention), numeric clamps, boolean parsing, user profile schema restoration, habit log checks, and challenge schema filters.
+
+---
+
+## 🔒 Security Considerations
+
+EcoWise AI implements a **local-first privacy and security framework** to safeguard user information:
+* **Zero Remote Servers**: All calculations, streak tracking, and profiles are processed entirely client-side. No user data or PII is sent to remote databases or external APIs.
+* **Hardened LocalStorage**: Reads and writes to `localStorage` are wrapped in defensive `try-catch` blocks and undergo strict schema verification and range clamping to prevent state corruption or layout injections.
+* **XSS Sanitization**: User-entered text inputs (names, descriptions) are sanitized through HTML entity encoding to neutralize Cross-Site Scripting payloads.
+* **React Error Boundaries**: The routing engine is wrapped inside a custom React `ErrorBoundary` component to capture runtime rendering errors gracefully and permit instant local state restoration.
 
 ---
 
