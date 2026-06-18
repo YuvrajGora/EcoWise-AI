@@ -26,6 +26,7 @@ const AppContent: React.FC = () => {
       return;
     }
     if (onboarded && (currentPage === 'landing' || currentPage === 'onboarding')) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCurrentPage('dashboard');
     } else if (!onboarded && currentPage !== 'landing' && currentPage !== 'onboarding' && currentPage !== 'settings') {
       setCurrentPage('landing');

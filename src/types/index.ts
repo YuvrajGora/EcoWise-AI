@@ -1,7 +1,7 @@
-export type CommuteType = 'petrol_car' | 'ev_car' | 'public_transit' | 'active';
-export type HeatingType = 'natural_gas' | 'electricity' | 'solar_green' | 'oil';
+export type CommuteType = 'petrol_car' | 'hybrid_car' | 'ev_car' | 'electric_car' | 'public_transit' | 'active' | 'active_commute';
+export type HeatingType = 'natural_gas' | 'electricity' | 'solar_green' | 'oil' | 'heating_oil' | 'biomass';
 export type DietType = 'meat_heavy' | 'average' | 'vegetarian' | 'vegan' | 'pescatarian';
-export type ShoppingVolume = 'none' | 'few' | 'average' | 'heavy';
+export type ShoppingVolume = 'none' | 'few' | 'average' | 'heavy' | 'light';
 
 export interface UserProfile {
   name: string;

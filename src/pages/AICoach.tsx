@@ -15,54 +15,57 @@ interface ChatMessage {
   timestamp: string;
 }
 
+const generateMessageId = (sender: string): string => {
+  return `msg_${Date.now()}_${Math.random().toString(36).substring(2, 7)}_${sender}`;
+};
+
+const getTimestamp = (): string => {
+  return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+};
+
+const calculateTopHotspot = (breakdown: { transport: number; energy: number; food: number; shopping: number; waste: number }) => {
+  const cats = [
+    { name: 'Transportation', val: breakdown.transport },
+    { name: 'Home Energy', val: breakdown.energy },
+    { name: 'Diet & Food', val: breakdown.food },
+    { name: 'Shopping habits', val: breakdown.shopping },
+    { name: 'Waste production', val: breakdown.waste }
+  ];
+  cats.sort((a, b) => b.val - a.val);
+  return cats[0].name;
+};
+
 export const AICoach: React.FC = () => {
   const { breakdown, recommendations, profile, highContrast, units } = useApp();
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  
+  const [messages, setMessages] = useState<ChatMessage[]>(() => [
+    {
+      id: 'welcome',
+      sender: 'coach',
+      text: `Hi ${profile.name || 'Eco Warrior'}! I'm your Sustainability Coach. I have analyzed your carbon assessment and identified that your highest emissions come from **${calculateTopHotspot(breakdown)}**. 
+ 
+How can I help you today? You can select one of the quick queries below or type a custom question!`,
+      timestamp: getTimestamp()
+    }
+  ]);
+
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
-
-  // Initialize coach welcome message
-  useEffect(() => {
-    if (messages.length === 0) {
-      setMessages([
-        {
-          id: 'welcome',
-          sender: 'coach',
-          text: `Hi ${profile.name || 'Eco Warrior'}! I'm your Sustainability Coach. I have analyzed your carbon assessment and identified that your highest emissions come from **${getTopHotspotName()}**. 
-
-How can I help you today? You can select one of the quick queries below or type a custom question!`,
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        }
-      ]);
-    }
-  }, [profile.name]);
 
   // Scroll to bottom on new message
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isTyping]);
 
-  const getTopHotspotName = () => {
-    const cats = [
-      { name: 'Transportation', val: breakdown.transport },
-      { name: 'Home Energy', val: breakdown.energy },
-      { name: 'Diet & Food', val: breakdown.food },
-      { name: 'Shopping habits', val: breakdown.shopping },
-      { name: 'Waste production', val: breakdown.waste }
-    ];
-    cats.sort((a, b) => b.val - a.val);
-    return cats[0].name;
-  };
-
   const handleSendMessage = (textToSend: string) => {
     if (!textToSend.trim()) return;
 
     const userMsg: ChatMessage = {
-      id: `msg_${Date.now()}_u`,
+      id: generateMessageId('u'),
       sender: 'user',
       text: textToSend,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      timestamp: getTimestamp()
     };
 
     setMessages(prev => [...prev, userMsg]);
@@ -71,7 +74,7 @@ How can I help you today? You can select one of the quick queries below or type 
 
     // Simulate coach analysis and reply based on sustainability intelligence
     setTimeout(() => {
-      let replyText = '';
+      let replyText: string;
       const query = textToSend.toLowerCase();
 
       if (query.includes('electricity') || query.includes('energy') || query.includes('power')) {
@@ -126,19 +129,19 @@ How can I help you today? You can select one of the quick queries below or type 
       
       else {
         replyText = `I have logged your question regarding carbon reductions. Looking at your data, your annual emissions profile is **${formatCarbon(breakdown.total, units)}**. 
-
+ 
 To offset this, I suggest checking the **Carbon Simulator** to model changes, or prioritizing your highest scoring Action Cards:
 1. **${recommendations[0]?.name || 'Unplug Standby Electronics'}** (Priority Score: ${recommendations[0]?.priorityScore || 10})
 2. **${recommendations[1]?.name || 'Switch to Green Energy'}** (Priority Score: ${recommendations[1]?.priorityScore || 8})
-
+ 
 Is there a specific category you would like to tackle first?`;
       }
 
       const coachMsg: ChatMessage = {
-        id: `msg_${Date.now()}_c`,
+        id: generateMessageId('c'),
         sender: 'coach',
         text: replyText,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        timestamp: getTimestamp()
       };
 
       setMessages(prev => [...prev, coachMsg]);

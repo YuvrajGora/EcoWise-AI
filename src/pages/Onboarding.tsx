@@ -49,7 +49,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ setCurrentPage }) => {
     recycling: 'recycle_some'
   });
 
-  const updateField = (key: keyof UserProfile, value: any) => {
+  const updateField = <K extends keyof UserProfile>(key: K, value: UserProfile[K]) => {
     setFormData(prev => ({
       ...prev,
       [key]: value
@@ -414,7 +414,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ setCurrentPage }) => {
               <select
                 id="localfood-select"
                 value={formData.localFood}
-                onChange={(e) => updateField('localFood', e.target.value)}
+                onChange={(e) => updateField('localFood', e.target.value as 'always' | 'sometimes' | 'rarely')}
                 className={`w-full bg-slate-900 border border-slate-700/60 rounded-lg px-3 py-2 text-sm text-slate-100 ${
                   highContrast ? 'bg-black border-white text-white' : ''
                 }`}
@@ -474,7 +474,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ setCurrentPage }) => {
               <select
                 id="recycling-select"
                 value={formData.recycling}
-                onChange={(e) => updateField('recycling', e.target.value)}
+                onChange={(e) => updateField('recycling', e.target.value as 'recycle_all' | 'recycle_some' | 'recycle_none')}
                 className={`w-full bg-slate-900 border border-slate-700/60 rounded-lg px-3 py-2 text-sm text-slate-100 ${
                   highContrast ? 'bg-black border-white text-white' : ''
                 }`}

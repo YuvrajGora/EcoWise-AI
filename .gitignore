@@ -38,3 +38,4 @@ pnpm-debug.log*
 lerna-debug.log*
 
 .vercel
+scratch/

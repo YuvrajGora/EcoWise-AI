@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { type UserProfile, calculateFootprint } from '../utils/sustainabilityIntelligence';
+import { type UserProfile, type CommuteType, type DietType } from '../types';
+import { calculateFootprint } from '../utils/sustainabilityIntelligence';
 import { EcoTwinComparisonBar } from '../components/VisualCharts';
 import { translateCarbon, formatCarbon } from '../utils/impactTranslator';
 import { 
@@ -18,7 +19,7 @@ export const CarbonSimulator: React.FC = () => {
   const [simProfile, setSimProfile] = useState<UserProfile>({ ...profile });
   const [isSaved, setIsSaved] = useState(false);
 
-  const handleSimChange = (key: keyof UserProfile, value: any) => {
+  const handleSimChange = <K extends keyof UserProfile>(key: K, value: UserProfile[K]) => {
     setSimProfile(prev => ({
       ...prev,
       [key]: value
@@ -102,7 +103,7 @@ export const CarbonSimulator: React.FC = () => {
               <select
                 id="sim-commute"
                 value={simProfile.commuteType}
-                onChange={(e) => handleSimChange('commuteType', e.target.value)}
+                onChange={(e) => handleSimChange('commuteType', e.target.value as CommuteType)}
                 className={`w-full bg-slate-900 border border-slate-700/60 rounded-lg px-3 py-2 text-xs text-slate-100 ${
                   highContrast ? 'bg-black border-white text-white' : ''
                 }`}
@@ -163,7 +164,7 @@ export const CarbonSimulator: React.FC = () => {
               <select
                 id="sim-diet"
                 value={simProfile.dietType}
-                onChange={(e) => handleSimChange('dietType', e.target.value)}
+                onChange={(e) => handleSimChange('dietType', e.target.value as DietType)}
                 className={`w-full bg-slate-900 border border-slate-700/60 rounded-lg px-3 py-2 text-xs text-slate-100 ${
                   highContrast ? 'bg-black border-white text-white' : ''
                 }`}

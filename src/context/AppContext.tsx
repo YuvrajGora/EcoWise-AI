@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+/* eslint-disable react-refresh/only-export-components */
+import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { 
   type UserProfile, 
   type Challenge,
@@ -115,32 +116,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const baseWeeklyEmissions = breakdown.total / 52;
 
   // Calculate carbon saved by habits logged this current week (last 7 days)
-  const [weeklySavedCarbon, setWeeklySavedCarbon] = useState<number>(0);
-  const [weeklyUsedCarbon, setWeeklyUsedCarbon] = useState<number>(baseWeeklyEmissions);
-  const [budgetHealth, setBudgetHealth] = useState<'Excellent' | 'Good' | 'Warning' | 'Exceeded'>('Good');
-
-  // Compute XP Level (200 XP per level)
-  const level = Math.floor(xp / 200) + 1;
-
-  // Computed Badges list
-  const [unlockedBadges, setUnlockedBadges] = useState<string[]>([]);
-
-  // Streak calculation (consecutive days with at least one log)
-  const [streak, setStreak] = useState<number>(0);
-
-  // Sync to LocalStorage
-  useEffect(() => {
-    localStorage.setItem('ecowise_onboarded', JSON.stringify(onboarded));
-    localStorage.setItem('ecowise_profile', JSON.stringify(profile));
-    localStorage.setItem('ecowise_habit_logs', JSON.stringify(habitLogs));
-    localStorage.setItem('ecowise_xp', xp.toString());
-    localStorage.setItem('ecowise_challenges', JSON.stringify(challenges));
-    localStorage.setItem('ecowise_high_contrast', JSON.stringify(highContrast));
-    localStorage.setItem('ecowise_units', JSON.stringify(units));
-  }, [onboarded, profile, habitLogs, xp, challenges, highContrast, units]);
-
-  // Recalculate weekly budget values whenever logs or profile changes
-  useEffect(() => {
+  const { weeklySavedCarbon, weeklyUsedCarbon, budgetHealth } = useMemo(() => {
     const today = new Date();
     const oneWeekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
     
@@ -151,28 +127,37 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
 
     const savedThisWeek = recentLogs.reduce((sum, log) => sum + log.co2SavedKg, 0);
-    setWeeklySavedCarbon(Math.round(savedThisWeek * 10) / 10);
+    const saved = Math.round(savedThisWeek * 10) / 10;
 
     const usedThisWeek = Math.max(0, baseWeeklyEmissions - savedThisWeek);
-    setWeeklyUsedCarbon(Math.round(usedThisWeek * 10) / 10);
+    const used = Math.round(usedThisWeek * 10) / 10;
 
     // Calculate budget health status
+    let health: 'Excellent' | 'Good' | 'Warning' | 'Exceeded';
     if (usedThisWeek <= weeklyBudgetLimit * 0.7) {
-      setBudgetHealth('Excellent');
+      health = 'Excellent';
     } else if (usedThisWeek <= weeklyBudgetLimit) {
-      setBudgetHealth('Good');
+      health = 'Good';
     } else if (usedThisWeek <= weeklyBudgetLimit * 1.2) {
-      setBudgetHealth('Warning');
+      health = 'Warning';
     } else {
-      setBudgetHealth('Exceeded');
+      health = 'Exceeded';
     }
+
+    return {
+      weeklySavedCarbon: saved,
+      weeklyUsedCarbon: used,
+      budgetHealth: health
+    };
   }, [habitLogs, baseWeeklyEmissions, weeklyBudgetLimit]);
 
-  // Calculate streaks
-  useEffect(() => {
+  // Compute XP Level (200 XP per level)
+  const level = Math.floor(xp / 200) + 1;
+
+  // Streak calculation (consecutive days with at least one log)
+  const streak = useMemo(() => {
     if (habitLogs.length === 0) {
-      setStreak(0);
-      return;
+      return 0;
     }
 
     // Get sorted unique log dates (YYYY-MM-DD)
@@ -187,7 +172,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     
     if (hasLogRecent) {
       currentStreak = 1;
-      let checkDate = new Date(logDates.includes(todayStr) ? todayStr : yesterdayStr);
+      const checkDate = new Date(logDates.includes(todayStr) ? todayStr : yesterdayStr);
       
       // Trace backwards
       while (true) {
@@ -200,11 +185,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         }
       }
     }
-    setStreak(currentStreak);
+    return currentStreak;
   }, [habitLogs]);
 
   // Unlock badges based on achievements
-  useEffect(() => {
+  const unlockedBadges = useMemo(() => {
     const badges: string[] = [];
     if (onboarded) badges.push('Green Onboarded');
     if (streak >= 3) badges.push('Streak Starter');
@@ -218,8 +203,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (completedChallengesCount >= 1) badges.push('Challenge Conqueror');
     if (completedChallengesCount >= 5) badges.push('Climate Champion');
 
-    setUnlockedBadges(badges);
+    return badges;
   }, [onboarded, streak, xp, challenges]);
+
+  // Sync to LocalStorage
+  useEffect(() => {
+    localStorage.setItem('ecowise_onboarded', JSON.stringify(onboarded));
+    localStorage.setItem('ecowise_profile', JSON.stringify(profile));
+    localStorage.setItem('ecowise_habit_logs', JSON.stringify(habitLogs));
+    localStorage.setItem('ecowise_xp', xp.toString());
+    localStorage.setItem('ecowise_challenges', JSON.stringify(challenges));
+    localStorage.setItem('ecowise_high_contrast', JSON.stringify(highContrast));
+    localStorage.setItem('ecowise_units', JSON.stringify(units));
+  }, [onboarded, profile, habitLogs, xp, challenges, highContrast, units]);
 
   // Triggered when user finishes Onboarding questionnaire
   const saveProfile = (newProfile: UserProfile) => {
@@ -330,7 +326,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const clearAllHabitLogs = () => {
     setHabitLogs([]);
-    setStreak(0);
   };
 
   const toggleHighContrast = () => {

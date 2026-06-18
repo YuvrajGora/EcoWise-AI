@@ -56,8 +56,8 @@ export const ActionCard: React.FC<ActionCardProps> = ({ recommendation, rank }) 
     const weeklySavings = Math.round((recommendation.rawSavingsKg / 4.33) * 10) / 10;
     
     // Determine a log value
-    let logVal = 1;
-    let desc = `Implemented: ${recommendation.name}`;
+    const logVal = 1;
+    const desc = `Implemented: ${recommendation.name}`;
 
     logHabit(
       recommendation.category,

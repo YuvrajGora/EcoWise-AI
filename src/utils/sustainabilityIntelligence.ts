@@ -42,7 +42,8 @@ export const calculateFootprint = (profile: UserProfile): FootprintBreakdown => 
   // 1. TRANSPORTATION
   let commuteFactor = 0;
   if (profile.commuteType === 'petrol_car') commuteFactor = 0.18; // kg/km
-  else if (profile.commuteType === 'ev_car') commuteFactor = 0.05;
+  else if (profile.commuteType === 'hybrid_car') commuteFactor = 0.09;
+  else if (profile.commuteType === 'ev_car' || profile.commuteType === 'electric_car') commuteFactor = 0.05;
   else if (profile.commuteType === 'public_transit') commuteFactor = 0.04;
   
   const annualCommute = profile.commuteDistance * 52 * commuteFactor;
@@ -53,9 +54,9 @@ export const calculateFootprint = (profile: UserProfile): FootprintBreakdown => 
   // 2. ENERGY
   let heatingAnnual = 0;
   if (profile.heatingSource === 'natural_gas') heatingAnnual = 1200; // kg CO2/yr avg
-  else if (profile.heatingSource === 'oil') heatingAnnual = 2200;
+  else if (profile.heatingSource === 'oil' || profile.heatingSource === 'heating_oil') heatingAnnual = 2200;
   else if (profile.heatingSource === 'electricity') heatingAnnual = 900;
-  else if (profile.heatingSource === 'solar_green') heatingAnnual = 150;
+  else if (profile.heatingSource === 'solar_green' || profile.heatingSource === 'biomass') heatingAnnual = 150;
 
   let electricMultiplier = 0.35; // kg CO2 per kWh
   if (profile.greenEnergy) {
@@ -85,11 +86,12 @@ export const calculateFootprint = (profile: UserProfile): FootprintBreakdown => 
 
   // 4. SHOPPING
   let clothingAnnual = 0;
-  if (profile.clothingMonthly === 'few') clothingAnnual = 150;
+  if (profile.clothingMonthly === 'none') clothingAnnual = 50;
+  else if (profile.clothingMonthly === 'few' || profile.clothingMonthly === 'light') clothingAnnual = 150;
   else if (profile.clothingMonthly === 'average') clothingAnnual = 450;
   else if (profile.clothingMonthly === 'heavy') clothingAnnual = 900;
 
-  let techAnnual = 0;
+  let techAnnual: number;
   if (profile.techYearly === 'medium') techAnnual = 200;
   else if (profile.techYearly === 'heavy') techAnnual = 500;
   else techAnnual = 50;

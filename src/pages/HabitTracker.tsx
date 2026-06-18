@@ -21,7 +21,7 @@ export const HabitTracker: React.FC = () => {
   } = useApp();
 
   // Habit logging form state
-  const [category, setCategory] = useState<string>('transport');
+  const [category, setCategory] = useState<'transport' | 'energy' | 'food' | 'shopping' | 'waste'>('transport');
   const [description, setDescription] = useState<string>('');
   const [carbonSaved, setCarbonSaved] = useState<number>(5.5);
   const [errorMsg, setErrorMsg] = useState<string>('');
@@ -44,7 +44,7 @@ export const HabitTracker: React.FC = () => {
     }
 
     logHabit(
-      category as any,
+      category,
       1,
       Number(carbonSaved),
       description
@@ -144,7 +144,7 @@ export const HabitTracker: React.FC = () => {
               <label className="text-[10px] font-bold text-slate-400 uppercase">Category Type</label>
               <select
                 value={category}
-                onChange={(e) => setCategory(e.target.value)}
+                onChange={(e) => setCategory(e.target.value as 'transport' | 'energy' | 'food' | 'shopping' | 'waste')}
                 className={`w-full rounded-xl bg-slate-900 border px-3 py-2 text-xs text-white focus:outline-none focus:ring-1 ${
                   highContrast ? 'border-white focus:ring-white' : 'border-white/10 focus:ring-emerald-500'
                 }`}

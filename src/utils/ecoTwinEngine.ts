@@ -62,11 +62,17 @@ export const calculateSimulatedFootprint = (
   inputs: SimulatorInputs
 ): FootprintBreakdown => {
   // Start with a copied profile to modify based on sliders
+  let transport: number;
 
   // 1. COMMUTE ALTERATIONS
   // If commuting by petrol/EV car, public transport days reduce car mileage.
   // 5 days commute is standard, but user can slide 0-7. Replaces car commutes.
-  if (profile.commuteType === 'petrol_car' || profile.commuteType === 'ev_car') {
+  if (
+    profile.commuteType === 'petrol_car' ||
+    profile.commuteType === 'hybrid_car' ||
+    profile.commuteType === 'ev_car' ||
+    profile.commuteType === 'electric_car'
+  ) {
     const transitReplacedRatio = Math.min(1, inputs.publicTransportDays / 7);
     const carCommuteWeight = 1 - transitReplacedRatio;
     
@@ -75,7 +81,12 @@ export const calculateSimulatedFootprint = (
     const transitDistance = profile.commuteDistance * transitReplacedRatio;
     
     // Calculate new transport emissions
-    const commuteFactorCar = profile.commuteType === 'petrol_car' ? 0.18 : 0.05;
+    let commuteFactorCar = 0.05;
+    if (profile.commuteType === 'petrol_car') {
+      commuteFactorCar = 0.18;
+    } else if (profile.commuteType === 'hybrid_car') {
+      commuteFactorCar = 0.09;
+    }
     const commuteFactorTransit = 0.04;
     
     const commuteEmissions = (carDistance * commuteFactorCar + transitDistance * commuteFactorTransit) * 52;
@@ -83,10 +94,10 @@ export const calculateSimulatedFootprint = (
     const longFlightEmissions = profile.longFlights * 10 * 250;
     
     // We override calculations in the breakdown
-    var transport = Math.round(commuteEmissions + shortFlightEmissions + longFlightEmissions);
+    transport = Math.round(commuteEmissions + shortFlightEmissions + longFlightEmissions);
   } else {
     // Already public transit or active
-    var transport = calculateFootprint(profile).transport;
+    transport = calculateFootprint(profile).transport;
   }
 
   // 2. ENERGY ALTERATIONS
@@ -106,7 +117,7 @@ export const calculateSimulatedFootprint = (
   else if (profile.heatingSource === 'electricity') heatingAnnual = 900;
   else if (profile.heatingSource === 'solar_green') heatingAnnual = 150;
 
-  var energy = Math.round(heatingAnnual + electricityEmissions);
+  const energy = Math.round(heatingAnnual + electricityEmissions);
 
   // 3. DIET ALTERATIONS
   // Veg meals per week: 0 to 21
@@ -131,15 +142,15 @@ export const calculateSimulatedFootprint = (
   if (profile.localFood === 'always') localModifier = -150;
   else if (profile.localFood === 'sometimes') localModifier = -50;
 
-  var food = Math.round(simulatedDietBase * wasteModifier + localModifier);
+  const food = Math.round(simulatedDietBase * wasteModifier + localModifier);
 
   // 4. SHOPPING ALTERATIONS (General 10% reduction if recycling is used, no simulator slider here)
-  var shopping = calculateFootprint(profile).shopping;
+  const shopping = calculateFootprint(profile).shopping;
 
   // 5. WASTE ALTERATIONS
   const wasteReductionWeight = 1 - inputs.wasteReduction / 100;
   const baselineWaste = calculateFootprint(profile).waste;
-  var waste = Math.round(baselineWaste * wasteReductionWeight);
+  const waste = Math.round(baselineWaste * wasteReductionWeight);
 
   const total = transport + energy + food + shopping + waste;
 
