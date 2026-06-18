@@ -5,7 +5,7 @@
 ---
 
 ## 🔗 Live Demo
-Visit the live client-side application here: **[https://yuvrajgora.github.io/EcoWise-AI/](https://yuvrajgora.github.io/EcoWise-AI/)**
+Visit the live client-side application here: **[https://ecowise-ai.vercel.app/](https://ecowise-ai.vercel.app/)**
 
 ---
 
