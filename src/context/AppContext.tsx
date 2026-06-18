@@ -28,12 +28,24 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const queryParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
     if (queryParams && queryParams.get('mock') === 'true') {
       return {
-        transportation: { type: 'petrol-car', drivingKm: 250, publicTransportMinutes: 60, flightsYearly: 4 },
-        energy: { electricityDays: 30, naturalGasDays: 0, renewablePercentage: 10, heatingSource: 'electricity' },
-        food: { dietType: 'meat-heavy', localFoodPercentage: 20, foodWastePercentage: 25 },
-        shopping: { monthlySpendUsd: 400, clothingItemsYearly: 24, electronicsYearly: 5 },
-        waste: { recyclingPercentage: 30, compostingPercentage: 0 },
-        reductionTarget: 20
+        name: 'Eco Warrior',
+        householdSize: 2,
+        location: 'US',
+        commuteType: 'petrol_car',
+        commuteDistance: 150,
+        shortFlights: 2,
+        longFlights: 1,
+        heatingSource: 'natural_gas',
+        electricityMonthly: 300,
+        greenEnergy: false,
+        dietType: 'meat_heavy',
+        localFood: 'sometimes',
+        foodWaste: 'medium',
+        clothingMonthly: 'average',
+        techYearly: 'medium',
+        trashBagsWeekly: 2,
+        composting: false,
+        recycling: 'recycle_some'
       };
     }
     const saved = localStorage.getItem('ecowise_profile');
@@ -43,11 +55,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [habitLogs, setHabitLogs] = useState<HabitLog[]>(() => {
     const queryParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
     if (queryParams && queryParams.get('mock') === 'true') {
+      const todayStr = new Date().toISOString().split('T')[0];
+      const yesterdayStr = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      const twoDaysAgoStr = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
       return [
-        { id: '1', habitId: 'public_transport', date: new Date().toISOString(), co2SavedKg: 4.8 },
-        { id: '2', habitId: 'vegetarian_meal', date: new Date().toISOString(), co2SavedKg: 1.2 },
-        { id: '3', habitId: 'led_bulbs', date: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), co2SavedKg: 0.8 },
-        { id: '4', habitId: 'cold_wash', date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), co2SavedKg: 0.5 }
+        { id: '1', date: todayStr, category: 'transport', value: 15, co2SavedKg: 4.8, description: 'Took public transit to work' },
+        { id: '2', date: todayStr, category: 'food', value: 2, co2SavedKg: 1.2, description: 'Had vegetarian meals' },
+        { id: '3', date: yesterdayStr, category: 'energy', value: 1, co2SavedKg: 0.8, description: 'Used LED lights only' },
+        { id: '4', date: twoDaysAgoStr, category: 'energy', value: 1, co2SavedKg: 0.5, description: 'Did a cold laundry wash' }
       ];
     }
     const saved = localStorage.getItem('ecowise_habit_logs');
@@ -65,9 +80,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const queryParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
     if (queryParams && queryParams.get('mock') === 'true') {
       return [
-        { id: 'c1', title: 'Car-Free Day', description: 'Walk or take public transport instead of driving.', co2SavedKg: 8.5, difficulty: 'Medium', timeframe: 'Daily', completed: false, category: 'transportation', rewardXp: 50 },
-        { id: 'c2', title: 'Veg Out', description: 'Eat 3 fully plant-based meals this week.', co2SavedKg: 3.6, difficulty: 'Low', timeframe: 'Weekly', completed: true, category: 'food', rewardXp: 30 },
-        { id: 'c3', title: 'Unplugged Evening', description: 'Reduce home electricity usage by 1 hour daily.', co2SavedKg: 1.5, difficulty: 'Low', timeframe: 'Daily', completed: false, category: 'energy', rewardXp: 20 }
+        { id: 'c1', title: 'Car-Free Day', description: 'Walk or take public transport instead of driving.', co2SavedKg: 8.5, difficulty: 'Medium', timeframe: 'daily', completed: false, category: 'transport', xpReward: 50, progressMax: 1, progressCurrent: 0 },
+        { id: 'c2', title: 'Veg Out', description: 'Eat 3 fully plant-based meals this week.', co2SavedKg: 3.6, difficulty: 'Low', timeframe: 'weekly', completed: true, category: 'food', xpReward: 30, progressMax: 3, progressCurrent: 3 },
+        { id: 'c3', title: 'Unplugged Evening', description: 'Reduce home electricity usage by 1 hour daily.', co2SavedKg: 1.5, difficulty: 'Low', timeframe: 'daily', completed: false, category: 'energy', xpReward: 20, progressMax: 1, progressCurrent: 0 }
       ];
     }
     const saved = localStorage.getItem('ecowise_challenges');

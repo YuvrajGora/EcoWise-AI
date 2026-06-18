@@ -92,43 +92,43 @@ flowchart TD
 ## 📸 Screenshots
 
 ### 1. Landing Page
-*![Landing Page Placeholder](public/screenshots/1_landing_page.png)*
+*![Landing Page](public/screenshots/1_landing.png)*
 *The welcoming homepage detailing features, tagline, and introductory copy.*
 
 ### 2. Onboarding
-*![Onboarding Placeholder](public/screenshots/2_onboarding.png)*
+*![Onboarding](public/screenshots/2_onboarding.png)*
 *Interactive step-by-step wizard collecting user lifestyle metrics.*
 
 ### 3. Dashboard
-*![Dashboard Placeholder](public/screenshots/3_dashboard.png)*
+*![Dashboard](public/screenshots/3_dashboard.png)*
 *The main hub displaying Carbon Budget, Sustainability Score, and quick actions.*
 
-### 4. EcoTwin
-*![EcoTwin Placeholder](public/screenshots/4_ecotwin.png)*
+### 4. Sustainability Score
+*![Sustainability Score](public/screenshots/4_sustainability_score.png)*
+*The gauge showing target annual carbon budgets and current footprint health.*
+
+### 5. EcoTwin Projections
+*![EcoTwin Projections](public/screenshots/5_ecotwin_projection.png)*
 *Comparison dashboard displaying current lifestyle projections vs. the recommended future self.*
 
-### 5. Carbon Simulator
-*![Carbon Simulator Placeholder](public/screenshots/5_carbon_simulator.png)*
+### 6. Carbon Simulator
+*![Carbon Simulator](public/screenshots/6_carbon_simulator.png)*
 *Interactive sliders allowing users to model emission reductions on the fly.*
 
-### 6. Sustainability Coach
-*![Sustainability Coach Placeholder](public/screenshots/6_sustainability_coach.png)*
+### 7. Sustainability Coach
+*![Sustainability Coach](public/screenshots/7_sustainability_coach.png)*
 *Interactive chat console showing personalized responses and hotspot reports.*
 
-### 7. Challenges
-*![Challenges Placeholder](public/screenshots/7_challenges.png)*
+### 8. Personalized Challenges
+*![Personalized Challenges](public/screenshots/8_personalized_challenges.png)*
 *Daily, weekly, and monthly challenges tailored to user hotspots.*
 
-### 8. Analytics
-*![Analytics Placeholder](public/screenshots/8_analytics.png)*
+### 9. Analytics Dashboard
+*![Analytics Dashboard](public/screenshots/9_analytics_dashboard.png)*
 *Interactive SVG breakdown, line trends, and decision intelligence graph.*
 
-### 9. Achievements
-*![Achievements Placeholder](public/screenshots/9_achievements.png)*
-*XP levels, streaks, and gamified badge collections.*
-
-### 10. Settings
-*![Settings Placeholder](public/screenshots/10_settings.png)*
+### 10. Settings & Accessibility
+*![Settings & Accessibility](public/screenshots/10_settings_accessibility.png)*
 *Preferences manager for high-contrast mode, metric/imperial units, and profile resets.*
 
 ---
