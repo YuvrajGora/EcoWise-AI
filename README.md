@@ -202,6 +202,34 @@ EcoWise-AI/
 
 ---
 
+## 🧪 Automated Testing
+
+EcoWise AI implements a comprehensive testing suite using **Vitest** and **React Testing Library** to validate both core logic engines and interactive UI components.
+
+### Running Tests
+To run the automated tests locally:
+```bash
+npm run test
+```
+
+### Coverage Generation
+To execute the tests and generate a detailed coverage report:
+```bash
+npm run coverage
+```
+
+### Tested Modules
+* **Core Logic Engines**:
+  * `sustainabilityIntelligence.ts`: Verifies carbon calculations by category (Transport, Energy, Food, Shopping, Waste) and hotspot detection math.
+  * `aiPriorityEngine.ts`: Validates dynamic priority rank ordering based on the savings-to-effort formula.
+  * `ecoTwinEngine.ts`: Tests the recommended projection math and sustainability score limits.
+  * `impactTranslator.ts`: Validates the accuracy of translating kilograms of CO₂ into trees, driving kilometers, and household electricity equivalents.
+* **UI Components**:
+  * `Dashboard.tsx`: Tests rendering of metrics, hotspots, active challenges, and floating quick log interactions.
+  * `CarbonSimulator.tsx`: Validates range slider input adjustments, simulation calculations, and resetting to baseline.
+
+---
+
 ## ♿ Accessibility
 
 * **Keyboard Navigation**: Focus indicators and keypress triggers are fully supported on all interactive buttons, cards, and input fields.
